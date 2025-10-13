@@ -32,7 +32,7 @@ ls -la public/rails-pulse-assets/
 
 ```bash
 # Run all tests (this will also validate the CI setup)
-rake test
+rake test_matrix
 
 # Check that the gem builds successfully
 gem build rails_pulse.gemspec
