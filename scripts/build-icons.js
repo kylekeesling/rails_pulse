@@ -51,9 +51,11 @@ const REQUIRED_ICONS = [
 // Icon name mappings for different naming conventions
 const ICON_MAPPINGS = {
   'loader-circle': 'loader',
-  'x-circle': 'circle-x',
+  'triangle-alert': 'alert-triangle',
   'alert-circle': 'circle-alert',
   'alert-triangle': 'triangle-alert',
+  'x-circle': 'circle-x',
+  'filter': 'list-filter',
   'message-circle-question': 'message-circle-question-mark',
   'trending-#{trend_direction}': null // This is dynamic ERB, skip it
 };
@@ -90,7 +92,7 @@ function extractSVGContent(iconName) {
 
       try {
         // Safely evaluate the array (it's just a static data structure)
-        const iconArray = eval(match[1].replace(/defaultAttributes/g, '{}'));
+        const iconArray = eval(match[1]);
 
         if (Array.isArray(iconArray)) {
           // New format (v0.545+): icon data is directly the elements array

@@ -2,11 +2,12 @@ module RailsPulse
   module Routes
     module Tables
       class Index
-        def initialize(ransack_query:, period_type: nil, start_time:, params:)
+        def initialize(ransack_query:, period_type: nil, start_time:, params:, disabled_tags: [])
           @ransack_query = ransack_query
           @period_type = period_type
           @start_time = start_time
           @params = params
+          @disabled_tags = disabled_tags
         end
 
         def to_table
@@ -22,6 +23,11 @@ module RailsPulse
               period_type: @period_type
             )
 
+          # Apply tag filters by excluding routes with disabled tags
+          @disabled_tags.each do |tag|
+            base_query = base_query.where.not("rails_pulse_routes.tags LIKE ?", "%#{tag}%")
+          end
+
           base_query = base_query.where(summarizable_id: @route.id) if @route
 
           # Apply grouping and aggregation
@@ -31,7 +37,8 @@ module RailsPulse
               "rails_pulse_summaries.summarizable_type",
               "rails_pulse_routes.id",
               "rails_pulse_routes.path",
-              "rails_pulse_routes.method"
+              "rails_pulse_routes.method",
+              "rails_pulse_routes.tags"
             )
             .select(
               "rails_pulse_summaries.summarizable_id",
@@ -39,6 +46,7 @@ module RailsPulse
               "rails_pulse_routes.id as route_id",
               "rails_pulse_routes.path",
               "rails_pulse_routes.method as route_method",
+              "rails_pulse_routes.tags",
               "AVG(rails_pulse_summaries.avg_duration) as avg_duration",
               "MAX(rails_pulse_summaries.max_duration) as max_duration",
               "SUM(rails_pulse_summaries.count) as count",
